@@ -1,0 +1,12 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# VSCode settings
+.vscode/
+
+# Poetry specific
+poetry.lock
+
+# git specific
+.git/
+.gitmessage.txt
