@@ -3,7 +3,7 @@ import logging
 
 from fastapi import FastAPI, Request, Response
 
-from yt_summarizer.utils.youtube_helpers import get_youtube_object
+from yt_summarizer.utils.yt_helper import YTHelper
 
 app = FastAPI()
 logger = logging.getLogger("uvicorn")
@@ -21,7 +21,7 @@ async def smr(request: Request):
         logger.error(f"An error occurred: {e}")
         return {"error": "An error occurred"}
 
-    obj = get_youtube_object(body_dict.get("url"))
+    obj = YTHelper.extract_info(body_dict.get("url"))
     test = (
         {"message": f"{obj.title}"} if obj is not None else {"message": "Invalid URL"}
     )
