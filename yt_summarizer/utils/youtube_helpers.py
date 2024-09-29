@@ -1,64 +1,25 @@
-import re
 from typing import Optional
 
-from pytube import YouTube, cipher
-from pytube.exceptions import RegexMatchError
-from pytube.innertube import _default_clients
+import yt_dlp
 
-_default_clients["ANDROID"]["context"]["client"]["clientVersion"] = "19.08.35"
-_default_clients["IOS"]["context"]["client"]["clientVersion"] = "19.08.35"
-_default_clients["ANDROID_EMBED"]["context"]["client"]["clientVersion"] = "19.08.35"
-_default_clients["IOS_EMBED"]["context"]["client"]["clientVersion"] = "19.08.35"
-_default_clients["IOS_MUSIC"]["context"]["client"]["clientVersion"] = "6.41"
-_default_clients["ANDROID_MUSIC"] = _default_clients["ANDROID_CREATOR"]
+from yt_summarizer.models.yt_info import YTInfo
+
+ydl_opts = {}
+
+yt_audio_extractor = yt_dlp.YoutubeDL(ydl_opts)
 
 
-def get_throttling_function_name(js: str) -> str:
-    """Extract the name of the function that computes the throttling parameter.
-
-    :param str js:
-        The contents of the base.js asset file.
-    :rtype: str
-    :returns:
-        The name of the function used to compute the throttling parameter.
-    """
-    function_patterns = [
-        r'a\.[a-zA-Z]\s*&&\s*\([a-z]\s*=\s*a\.get\("n"\)\)\s*&&\s*'
-        r"\([a-z]\s*=\s*([a-zA-Z0-9$]+)(\[\d+\])?\([a-z]\)",
-        r"\([a-z]\s*=\s*([a-zA-Z0-9$]+)(\[\d+\])\([a-z]\)",
-    ]
-    # logger.debug('Finding throttling function name')
-    for pattern in function_patterns:
-        regex = re.compile(pattern)
-        function_match = regex.search(js)
-        if function_match:
-            # logger.debug("finished regex search, matched: %s", pattern)
-            if len(function_match.groups()) == 1:
-                return function_match.group(1)
-            idx = function_match.group(2)
-            if idx:
-                idx = idx.strip("[]")
-                array = re.search(
-                    r"var {nfunc}\s*=\s*(\[.+?\]);".format(
-                        nfunc=re.escape(function_match.group(1))
-                    ),
-                    js,
-                )
-                if array:
-                    array = array.group(1).strip("[]").split(",")
-                    array = [x.strip() for x in array]
-                    return array[int(idx)]
-
-    raise RegexMatchError(caller="get_throttling_function_name", pattern="multiple")
-
-
-cipher.get_throttling_function_name = get_throttling_function_name
-
-
-def get_youtube_object(user_query_url: str) -> Optional[YouTube]:
+def get_youtube_object(user_query_url: str) -> Optional[dict]:
     try:
-        yt = YouTube(user_query_url)
-        return yt
+        info_dict = yt_audio_extractor.extract_info(user_query_url, download=False)
+        return YTInfo(
+            title=info_dict["title"],
+            length=info_dict["duration"],
+            author=info_dict["uploader"],
+            channel_url=info_dict["channel_url"],
+            thumbnail_url=info_dict["thumbnail"],
+            views=info_dict["view_count"],
+        )
     except Exception as e:
         print(f"An error occurred: {e}")
         return None

@@ -25,3 +25,10 @@ Follow these steps to set up the project:
     ```
 
 That's it! You should now have the YT Summarizer project set up and ready to use.
+
+## Test
+
+4. Run the test:
+    ```sh
+    PYTHONPATH=./ pytest
+    ```
