@@ -13,6 +13,7 @@ def get_youtube_object(user_query_url: str) -> Optional[dict]:
     try:
         info_dict = yt_audio_extractor.extract_info(user_query_url, download=False)
         return YTInfo(
+            url=user_query_url,
             title=info_dict["title"],
             length=info_dict["duration"],
             author=info_dict["uploader"],
