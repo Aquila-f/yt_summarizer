@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 
 class YTInfo(BaseModel):
+    url: str
     title: str
     length: int
     author: str

@@ -1,0 +1,101 @@
+import json
+import random
+import string
+from typing import Optional
+
+import requests
+import yt_dlp
+
+from yt_summarizer.models.yt_info import SubtitleUrl, YTInfo
+
+
+def progress_hook(d):
+    if d["status"] == "downloading":
+        print(f"下載進度: {d['_percent_str']}")
+
+
+yt_info_extractor_opts = {
+    "writesubtitles": True,
+    "subtitleslangs": ["all"],
+    "skip_download": True,
+}
+
+yt_audio_extractor_opts = {
+    "format": "bestaudio/best",
+    "postprocessors": [
+        {
+            "key": "FFmpegExtractAudio",
+            "preferredcodec": "wav",
+            "preferredquality": "192",
+        }
+    ],
+    "outtmpl": "-",
+    "logtostderr": True,
+}
+
+
+class YTHelper:
+    @staticmethod
+    def extract_info(yt_url: str) -> Optional[YTInfo]:
+        try:
+            with yt_dlp.YoutubeDL(yt_info_extractor_opts) as ydl:
+                info_dict = ydl.extract_info(yt_url, download=False)
+                subtitles = info_dict.get("subtitles", {})
+
+                tmp_subinfo = None
+                for key in ["zh", "en"]:
+                    if key in subtitles:
+                        tmp_subinfo = SubtitleUrl(
+                            lang=key,
+                            ext=subtitles[key][0]["ext"],
+                            url=subtitles[key][0]["url"],
+                            name=subtitles[key][0]["name"],
+                        )
+                        break
+
+                return YTInfo(
+                    url=yt_url,
+                    title=info_dict["title"],
+                    length=info_dict["duration"],
+                    author=info_dict["uploader"],
+                    channel_url=info_dict["channel_url"],
+                    thumbnail_url=info_dict["thumbnail"],
+                    views=info_dict["view_count"],
+                    subtitle=tmp_subinfo,
+                )
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return None
+
+    @staticmethod
+    def download_audio(yt_url: str) -> Optional[str]:
+        save_key = "".join(random.choices(string.ascii_letters + string.digits, k=8))
+        yt_audio_extractor_opts["outtmpl"] = f"{save_key}.%(ext)s"
+        try:
+            with yt_dlp.YoutubeDL(yt_audio_extractor_opts) as ydl:
+                ydl.download([yt_url])
+                return f"{save_key}.wav"
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return None
+
+    @staticmethod
+    def download_subtitle(subtitle_url: str) -> Optional[str]:
+        try:
+            response = requests.get(subtitle_url)
+            return YTHelper._preprocess_subtitle(response.text)
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return None
+
+    def _preprocess_subtitle(subtitle: str) -> str:
+        subtitle_list = json.loads(subtitle)["events"]
+
+        return_list = []
+        for item in subtitle_list:
+            sentence = ""
+            for seg in item["segs"]:
+                sentence += seg.get("utf8", "")
+            return_list.append(sentence)
+
+        return "\n".join(return_list)
