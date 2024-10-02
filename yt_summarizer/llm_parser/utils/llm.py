@@ -1,0 +1,8 @@
+import os
+
+from langchain_openai import ChatOpenAI
+
+
+def get_openai_model():
+    model_name = os.getenv("OPENAI_MODEL_NAME")
+    return ChatOpenAI(model=model_name, temperature=0)
