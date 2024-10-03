@@ -33,6 +33,18 @@ yt_audio_extractor_opts = {
     "logtostderr": True,
 }
 
+yt_video_extractor_opts = {
+    "format": "bestvideo/best",
+    "merge_output_format": "mp4",
+    "postprocessors": [
+        {
+            "key": "FFmpegVideoConvertor",
+            "preferedformat": "mp4",
+        }
+    ],
+    "outtmpl": "-",
+}
+
 
 class YTHelper:
     @staticmethod
@@ -80,7 +92,19 @@ class YTHelper:
             return None
 
     @staticmethod
-    def download_subtitle(subtitle_url: str) -> Optional[str]:
+    def download_video(yt_url: str) -> Optional[str]:
+        save_key = "".join(random.choices(string.ascii_letters + string.digits, k=8))
+        yt_video_extractor_opts["outtmpl"] = f"{save_key}.%(ext)s"
+        try:
+            with yt_dlp.YoutubeDL(yt_video_extractor_opts) as ydl:
+                ydl.download([yt_url])
+                return f"{yt_url}.mp4"
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return None
+
+    @staticmethod
+    def download_subtitle(subtitle_url: str) -> Optional[list[Segment]]:
         try:
             response = requests.get(subtitle_url)
             return YTHelper._yt_response_postprocessor(response.text)
