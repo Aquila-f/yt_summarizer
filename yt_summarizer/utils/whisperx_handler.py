@@ -2,6 +2,8 @@ from typing import Optional
 
 import whisperx
 
+from yt_summarizer.models.yt_info import Segment
+
 
 class WhisperxHandler:
     device = "cuda"
@@ -16,15 +18,26 @@ class WhisperxHandler:
     )
 
     @classmethod
-    def transcribe(cls, audio_path: str) -> Optional[dict]:
+    def transcribe(cls, audio_path: str) -> Optional[list[Segment]]:
         try:
             audio = whisperx.load_audio(audio_path)
-            result = cls.model.transcribe(audio, batch_size=cls.batch_size)
+            result = cls.model.transcribe(
+                audio, batch_size=cls.batch_size, chunk_size=20
+            )
             return cls._preprocess_subtitle(result)
         except Exception as e:
             print(f"An error during whisperx transcription: {e}")
             return None
 
     @staticmethod
-    def _preprocess_subtitle(whisperx_result: dict) -> str:
-        return "\n".join([seg["text"] for seg in whisperx_result["segments"]])
+    def _preprocess_subtitle(whisperx_result: dict) -> list[Segment]:
+        segment_list: list[Segment] = []
+        for segment in whisperx_result["segments"]:
+            segment_list.append(
+                Segment(
+                    start=segment["start"],
+                    end=segment["end"],
+                    text=segment["text"],
+                )
+            )
+        return segment_list

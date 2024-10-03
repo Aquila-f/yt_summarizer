@@ -6,7 +6,7 @@ from typing import Optional
 import requests
 import yt_dlp
 
-from yt_summarizer.models.yt_info import SubtitleUrl, YTInfo
+from yt_summarizer.models.yt_info import Segment, SubtitleUrl, YTInfo
 
 
 def progress_hook(d):
@@ -31,6 +31,18 @@ yt_audio_extractor_opts = {
     ],
     "outtmpl": "-",
     "logtostderr": True,
+}
+
+yt_video_extractor_opts = {
+    "format": "bestvideo/best",
+    "merge_output_format": "mp4",
+    "postprocessors": [
+        {
+            "key": "FFmpegVideoConvertor",
+            "preferedformat": "mp4",
+        }
+    ],
+    "outtmpl": "-",
 }
 
 
@@ -80,22 +92,34 @@ class YTHelper:
             return None
 
     @staticmethod
-    def download_subtitle(subtitle_url: str) -> Optional[str]:
+    def download_video(yt_url: str) -> Optional[str]:
+        save_key = "".join(random.choices(string.ascii_letters + string.digits, k=8))
+        yt_video_extractor_opts["outtmpl"] = f"{save_key}.%(ext)s"
         try:
-            response = requests.get(subtitle_url)
-            return YTHelper._preprocess_subtitle(response.text)
+            with yt_dlp.YoutubeDL(yt_video_extractor_opts) as ydl:
+                ydl.download([yt_url])
+                return f"{yt_url}.mp4"
         except Exception as e:
             print(f"An error occurred: {e}")
             return None
 
-    def _preprocess_subtitle(subtitle: str) -> str:
-        subtitle_list = json.loads(subtitle)["events"]
+    @staticmethod
+    def download_subtitle(subtitle_url: str) -> Optional[list[Segment]]:
+        try:
+            response = requests.get(subtitle_url)
+            return YTHelper._yt_response_postprocessor(response.text)
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return None
 
-        return_list = []
-        for item in subtitle_list:
-            sentence = ""
-            for seg in item["segs"]:
-                sentence += seg.get("utf8", "")
-            return_list.append(sentence)
-
-        return "\n".join(return_list)
+    def _yt_response_postprocessor(yt_response_text: str) -> list[Segment]:
+        yt_response_dict = json.loads(yt_response_text)["events"]
+        new_subtitle_list = []
+        for seg in yt_response_dict:
+            start_ms = seg["tStartMs"]
+            duration_ms = seg["dDurationMs"]
+            start = start_ms / 1000
+            end = (start_ms + duration_ms) / 1000
+            text = ",".join([sentence["utf8"] for sentence in seg["segs"]])
+            new_subtitle_list.append(Segment(start=start, end=end, text=text))
+        return new_subtitle_list

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
 
-class stock(BaseModel):
+class Stock(BaseModel):
     name: str
     symbol: str
