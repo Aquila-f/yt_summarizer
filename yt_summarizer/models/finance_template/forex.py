@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
 
-class Trend(BaseModel):
+class Forex(BaseModel):
     name: str
     symbol: str
