@@ -10,6 +10,12 @@ class SubtitleUrl(BaseModel):
     name: str
 
 
+class Segment(BaseModel):
+    start: float
+    end: float
+    text: str
+
+
 class YTInfo(BaseModel):
     url: str
     title: str

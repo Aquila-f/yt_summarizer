@@ -6,7 +6,7 @@ from typing import Optional
 import requests
 import yt_dlp
 
-from yt_summarizer.models.yt_info import SubtitleUrl, YTInfo
+from yt_summarizer.models.yt_info import Segment, SubtitleUrl, YTInfo
 
 
 def progress_hook(d):
@@ -83,19 +83,19 @@ class YTHelper:
     def download_subtitle(subtitle_url: str) -> Optional[str]:
         try:
             response = requests.get(subtitle_url)
-            return YTHelper._preprocess_subtitle(response.text)
+            return YTHelper._yt_response_postprocessor(response.text)
         except Exception as e:
             print(f"An error occurred: {e}")
             return None
 
-    def _preprocess_subtitle(subtitle: str) -> str:
-        subtitle_list = json.loads(subtitle)["events"]
-
-        return_list = []
-        for item in subtitle_list:
-            sentence = ""
-            for seg in item["segs"]:
-                sentence += seg.get("utf8", "")
-            return_list.append(sentence)
-
-        return "\n".join(return_list)
+    def _yt_response_postprocessor(yt_response_text: str) -> list[Segment]:
+        yt_response_dict = json.loads(yt_response_text)["events"]
+        new_subtitle_list = []
+        for seg in yt_response_dict:
+            start_ms = seg["tStartMs"]
+            duration_ms = seg["dDurationMs"]
+            start = start_ms / 1000
+            end = (start_ms + duration_ms) / 1000
+            text = ",".join([sentence["utf8"] for sentence in seg["segs"]])
+            new_subtitle_list.append(Segment(start=start, end=end, text=text))
+        return new_subtitle_list

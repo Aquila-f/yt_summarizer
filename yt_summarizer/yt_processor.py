@@ -1,14 +1,14 @@
 import os
 from typing import Optional
 
-from yt_summarizer.models.yt_info import YTInfo
+from yt_summarizer.models.yt_info import Segment, YTInfo
 from yt_summarizer.utils.whisperx_handler import WhisperxHandler
 from yt_summarizer.utils.yt_helper import YTHelper
 
 
 class YTProcessor:
     @classmethod
-    def get_subtitle(cls, yt_info: YTInfo) -> Optional[str]:
+    def get_subtitle(cls, yt_info: YTInfo) -> Optional[list[Segment]]:
         if yt_info.subtitle is not None:
             subtitle_text = YTHelper.download_subtitle(yt_info.subtitle.url)
             return subtitle_text
