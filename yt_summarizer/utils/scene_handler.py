@@ -6,7 +6,7 @@ from scenedetect.frame_timecode import FrameTimecode
 from yt_summarizer.models.video_fragment import SceneDetectionInfo
 
 CONTENT_DETECTOR_THRESHOLD = 20.0
-MINIMUM_SCENE_DURATION = 5.0
+MINIMUM_SCENE_DURATION = 10.0
 IMAGE_TIMESTAMP_OFFSET = 3.0
 
 

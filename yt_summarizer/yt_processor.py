@@ -1,7 +1,7 @@
 import os
 from typing import Optional
 
-from yt_summarizer.models.video_fragment import SceneDetectionInfo
+from yt_summarizer.models.video_fragment import SceneDetectionInfo, VideoFragment
 from yt_summarizer.models.yt_info import Segment, YTInfo
 from yt_summarizer.utils.scene_handler import SceneHandler
 from yt_summarizer.utils.whisperx_handler import WhisperxHandler
@@ -9,6 +9,40 @@ from yt_summarizer.utils.yt_helper import YTHelper
 
 
 class YTProcessor:
+    @classmethod
+    def get_fragments(cls, yt_url: str) -> Optional[list[VideoFragment]]:
+        yt_info = YTHelper.extract_info(yt_url)
+        subtitle_content = cls.get_subtitle(yt_info)
+        scenes_content = cls.get_scenes(yt_info.url)
+        fragments = cls.merge_fragments(subtitle_content, scenes_content)
+        return fragments
+
+    @staticmethod
+    def merge_fragments(
+        subtitle_content: list[Segment], scenes_content: list[SceneDetectionInfo]
+    ) -> list[VideoFragment]:
+        fragment_list = []
+        subtitle_idx = 0
+        for section in scenes_content:
+            sentences = []
+
+            while subtitle_idx < len(subtitle_content):
+                subtitle = subtitle_content[subtitle_idx]
+
+                if subtitle.end <= section.start:
+                    subtitle_idx += 1
+                    continue
+                if subtitle.start >= section.end:
+                    subtitle_idx -= 1
+                    break
+                sentences.append(subtitle.text)
+                subtitle_idx += 1
+
+            fragment = VideoFragment(**section.model_dump(), sentences=sentences)
+            fragment_list.append(fragment)
+
+        return fragment_list
+
     @staticmethod
     def get_subtitle(yt_info: YTInfo) -> Optional[list[Segment]]:
         if yt_info.subtitle is not None:
