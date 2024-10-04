@@ -98,7 +98,7 @@ class YTHelper:
         try:
             with yt_dlp.YoutubeDL(yt_video_extractor_opts) as ydl:
                 ydl.download([yt_url])
-                return f"{yt_url}.mp4"
+                return f"{save_key}.mp4"
         except Exception as e:
             print(f"An error occurred: {e}")
             return None
