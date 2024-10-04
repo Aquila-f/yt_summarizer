@@ -4,6 +4,8 @@ import whisperx
 
 from yt_summarizer.models.yt_info import Segment
 
+CHUNK_SIZE = 15
+
 
 class WhisperxHandler:
     device = "cuda"
@@ -22,7 +24,7 @@ class WhisperxHandler:
         try:
             audio = whisperx.load_audio(audio_path)
             result = cls.model.transcribe(
-                audio, batch_size=cls.batch_size, chunk_size=20
+                audio, batch_size=cls.batch_size, chunk_size=CHUNK_SIZE
             )
             return cls._whisperx_postprocessor(result)
         except Exception as e:
