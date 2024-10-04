@@ -22,7 +22,7 @@ class WhisperxHandler:
         try:
             audio = whisperx.load_audio(audio_path)
             result = cls.model.transcribe(
-                audio, batch_size=cls.batch_size, chunk_size=20
+                audio, batch_size=cls.batch_size, chunk_size=15
             )
             return cls._whisperx_postprocessor(result)
         except Exception as e:
