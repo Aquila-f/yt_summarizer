@@ -1,4 +1,5 @@
 import json
+import os
 import random
 import string
 from typing import Optional
@@ -7,12 +8,6 @@ import requests
 import yt_dlp
 
 from yt_summarizer.models.yt_info import Segment, SubtitleUrl, YTInfo
-
-
-def progress_hook(d):
-    if d["status"] == "downloading":
-        print(f"下載進度: {d['_percent_str']}")
-
 
 yt_info_extractor_opts = {
     "writesubtitles": True,
@@ -67,6 +62,7 @@ class YTHelper:
 
                 return YTInfo(
                     url=yt_url,
+                    id=info_dict["id"],
                     title=info_dict["title"],
                     length=info_dict["duration"],
                     author=info_dict["uploader"],
@@ -92,13 +88,12 @@ class YTHelper:
             return None
 
     @staticmethod
-    def download_video(yt_url: str) -> Optional[str]:
-        save_key = "".join(random.choices(string.ascii_letters + string.digits, k=8))
-        yt_video_extractor_opts["outtmpl"] = f"{save_key}.%(ext)s"
+    def download_video(save_dir: str, yt_url: str) -> Optional[str]:
+        yt_video_extractor_opts["outtmpl"] = os.path.join(save_dir, f"video.%(ext)s")
         try:
             with yt_dlp.YoutubeDL(yt_video_extractor_opts) as ydl:
                 ydl.download([yt_url])
-                return f"{save_key}.mp4"
+                return yt_video_extractor_opts["outtmpl"]
         except Exception as e:
             print(f"An error occurred: {e}")
             return None

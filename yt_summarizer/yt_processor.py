@@ -7,13 +7,16 @@ from yt_summarizer.utils.scene_handler import SceneHandler
 from yt_summarizer.utils.whisperx_handler import WhisperxHandler
 from yt_summarizer.utils.yt_helper import YTHelper
 
+DATA_ROOT = "./data"
+
 
 class YTProcessor:
     @classmethod
     def get_fragments(cls, yt_url: str) -> Optional[list[VideoFragment]]:
         yt_info = YTHelper.extract_info(yt_url)
+        save_dir = os.path.join(DATA_ROOT, yt_info.id)
         subtitle_content = cls.get_subtitle(yt_info)
-        scenes_content = cls.get_scenes(yt_info.url)
+        scenes_content = cls.get_scenes(save_dir, yt_url)
         fragments = cls.merge_fragments(subtitle_content, scenes_content)
         return fragments
 
@@ -61,10 +64,10 @@ class YTProcessor:
             return audio_text
 
     @staticmethod
-    def get_scenes(yt_url: str) -> Optional[list[SceneDetectionInfo]]:
+    def get_scenes(save_dir: str, yt_url: str) -> Optional[list[SceneDetectionInfo]]:
         try:
-            video_key = YTHelper.download_video(yt_url)
-            scenes_content = SceneHandler.detect_scenes(video_key)
+            _ = YTHelper.download_video(save_dir, yt_url)
+            scenes_content = SceneHandler.detect_scenes(save_dir)
             return scenes_content
         except Exception as e:
             print(f"An error occurred: {e}")
