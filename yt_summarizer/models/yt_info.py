@@ -12,6 +12,7 @@ class SubtitleUrl(BaseModel):
 
 class YTInfo(BaseModel):
     url: str
+    id: str
     title: str
     length: int
     author: str
