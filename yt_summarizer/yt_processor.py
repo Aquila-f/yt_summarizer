@@ -34,12 +34,14 @@ class YTProcessor:
 
                 if subtitle.end <= section.start:
                     subtitle_idx += 1
-                    continue
-                if subtitle.start >= section.end:
-                    subtitle_idx -= 1
+                elif subtitle.end <= section.end:
+                    sentences.append(subtitle.text)
+                    subtitle_idx += 1
+                else:
+                    if (section.end - subtitle.start) > (subtitle.end - section.end):
+                        sentences.append(subtitle.text)
+                        subtitle_idx += 1
                     break
-                sentences.append(subtitle.text)
-                subtitle_idx += 1
 
             fragment = VideoFragment(**section.model_dump(), sentences=sentences)
             fragment_list.append(fragment)
