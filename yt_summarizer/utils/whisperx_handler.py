@@ -4,7 +4,7 @@ import whisperx
 
 from yt_summarizer.models.yt_info import Segment
 
-CHUNK_SIZE = 15
+CHUNK_SIZE = 10
 
 
 class WhisperxHandler:
@@ -12,11 +12,16 @@ class WhisperxHandler:
     compute_type = "float16"
     batch_size = 4
     model_dir = "./path/"
+    asr_options = {
+        "initial_prompt": "你好，这是一个关于 金融逐字稿的討論。",
+    }
     model = whisperx.load_model(
         "large-v3",
         device,
         compute_type=compute_type,
         download_root=model_dir,
+        language="zh",
+        asr_options=asr_options,
     )
 
     @classmethod
@@ -28,7 +33,7 @@ class WhisperxHandler:
             )
             return cls._whisperx_postprocessor(result)
         except Exception as e:
-            print(f"An error during whisperx transcription: {e}")
+            print(f"[[[ERROR]]] An error during whisperx transcription: {e}")
             return None
 
     @staticmethod
