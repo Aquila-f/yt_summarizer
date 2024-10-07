@@ -1,20 +1,23 @@
+from enum import Enum
+from typing import Optional, Union
+
 from pydantic import BaseModel, Field
 
-from yt_summarizer.models.finance_template.etfs import ETF
-from yt_summarizer.models.finance_template.forex import Forex
-from yt_summarizer.models.finance_template.stock import Stock
+from yt_summarizer.models.finance_template.economic_indicator import EconomicIndicator
+from yt_summarizer.models.finance_template.financial_product import FinancialProduct
+from yt_summarizer.models.finance_template.market_trend import MarketTrend
 
 
 class FinanceSummary(BaseModel):
-    stocks: list[Stock] = Field(
-        [],
-        description="A list of individual stocks. If no stocks are available, leave this list empty.",
+    financial_product: Optional[FinancialProduct] = Field(
+        None, description="Summary of key financial products discussed"
     )
-    etfs: list[ETF] = Field(
-        [],
-        description="A list of ETFs (Exchange-Traded Funds). If no ETFs are available, leave this list empty.",
+    economic_indicators: Optional[EconomicIndicator] = Field(
+        None, description="Summary of important economic indicators mentioned"
     )
-    forex: list[Forex] = Field(
-        [],
-        description="A list of forex pairs. If no forex pairs are available, leave this list empty.",
+    market_trends: Optional[MarketTrend] = Field(
+        None, description="Overview of market trends highlighted"
+    )
+    overall_summary: str = Field(
+        str, description="Comprehensive summary of all key points"
     )
