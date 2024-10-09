@@ -3,9 +3,9 @@ from typing import Optional
 
 from yt_summarizer.models.video_fragment import SceneDetectionInfo, VideoFragment
 from yt_summarizer.models.yt_info import Segment, YTInfo
-from yt_summarizer.utils.scene_handler import SceneHandler
-from yt_summarizer.utils.whisperx_handler import WhisperxHandler
-from yt_summarizer.utils.yt_helper import YTHelper
+from yt_summarizer.service.scene_handler import SceneHandler
+from yt_summarizer.service.whisperx_handler import WhisperxHandler
+from yt_summarizer.service.yt_helper import YTHelper
 
 DATA_ROOT = "./data"
 

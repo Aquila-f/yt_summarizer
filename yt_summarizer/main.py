@@ -3,7 +3,7 @@ import logging
 
 from fastapi import FastAPI, Request, Response
 
-from yt_summarizer.utils.yt_helper import YTHelper
+from yt_summarizer.service.yt_helper import YTHelper
 
 app = FastAPI()
 logger = logging.getLogger("uvicorn")

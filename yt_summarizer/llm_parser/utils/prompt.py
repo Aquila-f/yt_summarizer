@@ -1,5 +1,4 @@
-PROMPT_PATH = "./prompt/summary.txt"
-EXTRACT_KEY_PROMPT_PATH = "./prompt/key_extract.txt"
+EXTRACT_KEY_WITH_IMAGE_PROMPT_PATH = "./prompt/key_extract_with_img.txt"
 
 
 def load_file(file_path: str) -> str:
@@ -7,13 +6,6 @@ def load_file(file_path: str) -> str:
         return file.read()
 
 
-def get_prompt(subtitle_txt: str) -> str:
-    prompt_template = load_file(PROMPT_PATH)
-    final_prompt = prompt_template.replace("{{article_content}}", subtitle_txt)
-    return final_prompt
-
-
-def get_extract_key_prompt(subtitle_txt: str) -> str:
-    prompt_template = load_file(EXTRACT_KEY_PROMPT_PATH)
-    final_prompt = prompt_template.replace("{{article_content}}", subtitle_txt)
-    return final_prompt
+def get_extract_key_with_image_prompt() -> str:
+    prompt_template = load_file(EXTRACT_KEY_WITH_IMAGE_PROMPT_PATH)
+    return prompt_template
