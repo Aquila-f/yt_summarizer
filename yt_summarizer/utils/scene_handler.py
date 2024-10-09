@@ -6,9 +6,9 @@ from scenedetect.frame_timecode import FrameTimecode
 
 from yt_summarizer.models.video_fragment import SceneDetectionInfo
 
-CONTENT_DETECTOR_THRESHOLD = 20.0
-MINIMUM_SCENE_DURATION = 10.0
-IMAGE_TIMESTAMP_OFFSET = 3.0
+CONTENT_DETECTOR_THRESHOLD = 15.0
+MINIMUM_SCENE_DURATION = 5.0
+IMAGE_TIMESTAMP_OFFSET = 1.2
 
 
 class SceneHandler:
@@ -58,7 +58,7 @@ class SceneHandler:
         if not success:
             raise ValueError("Failed to read frame from video")
 
-        img_path = os.path.join(scenes_dir, f"{ms}.jpg")
+        img_path = os.path.join(scenes_dir, f"{ms}.png")
         imwrite(img_path, frame_image)
         return img_path
 
