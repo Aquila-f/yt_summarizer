@@ -1,12 +1,10 @@
 from yt_summarizer.llm_parser.utils.llm import get_openai_model
-from yt_summarizer.llm_parser.utils.prompt import get_extract_key_prompt, get_prompt
-from yt_summarizer.models.finance_summary import FinanceSummary
+from yt_summarizer.llm_parser.utils.prompt_handler import key_extract_with_image_prompt
 
 
-def key_extract(subtitle_txt: str) -> FinanceSummary:
+def key_extract_with_image(image_path: str) -> str:
+    prompt = key_extract_with_image_prompt(image_path)
     llm = get_openai_model()
-    structured_llm = llm.with_structured_output(FinanceSummary)
-    prompt = get_extract_key_prompt(subtitle_txt)
-    result = structured_llm.invoke(prompt)
+    result = llm.invoke(prompt)
     print(result)
     return result
