@@ -1,7 +1,6 @@
 import base64
 
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_core.output_parsers import StrOutputParser
 
 from yt_summarizer.llm_parser.utils.llm import get_openai_model
 from yt_summarizer.llm_parser.utils.prompt import load_file

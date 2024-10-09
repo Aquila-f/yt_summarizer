@@ -5,6 +5,7 @@ from scenedetect import ContentDetector, detect
 from scenedetect.frame_timecode import FrameTimecode
 
 from yt_summarizer.models.video_fragment import SceneDetectionInfo
+from yt_summarizer.utils.file_operation import is_exist
 
 CONTENT_DETECTOR_THRESHOLD = 15.0
 MINIMUM_SCENE_DURATION = 5.0
@@ -12,10 +13,6 @@ IMAGE_TIMESTAMP_OFFSET = 1.2
 
 
 class SceneHandler:
-
-    @staticmethod
-    def _video_exists(video_path: str) -> bool:
-        return os.path.exists(video_path)
 
     @classmethod
     def _scene_postprocessor(
@@ -65,7 +62,7 @@ class SceneHandler:
     @classmethod
     def detect_scenes(cls, save_dir: str) -> list[SceneDetectionInfo]:
         video_path = os.path.join(save_dir, "video.mp4")
-        if not cls._video_exists(video_path):
+        if not is_exist(video_path):
             raise FileNotFoundError(f"Video file not found: {video_path}")
 
         scenedetect_result = detect(

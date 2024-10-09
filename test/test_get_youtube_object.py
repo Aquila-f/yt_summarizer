@@ -1,6 +1,6 @@
 import pytest
 
-from yt_summarizer.utils.yt_helper import YTHelper
+from yt_summarizer.service.yt_helper import YTHelper
 
 
 def test_get_youtube_object_valid_url():

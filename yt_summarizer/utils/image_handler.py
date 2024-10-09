@@ -5,11 +5,13 @@ from PIL import Image
 
 
 class ImageHandler:
+    ZOOM_OUT_FACTOR = 3
+
     @classmethod
     def resize_and_convert_image_to_base64(cls, image_path: str) -> str:
         with open(image_path, "rb") as image_file:
             image = Image.open(image_file)
-            resized_image = cls.resize_image(image, 4)
+            resized_image = cls.resize_image(image, cls.ZOOM_OUT_FACTOR)
         return cls.to_base64(cls.to_bytes(resized_image))
 
     @staticmethod
