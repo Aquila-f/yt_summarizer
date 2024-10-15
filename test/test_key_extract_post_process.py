@@ -19,7 +19,7 @@ class TestKeyExtractLLMParser:
         for case in base_cases:
             input_str = case["input"]
             expected_output = case["expect"]
-            result = ImageKeyParser.post_process(input_str)
+            result = ImageKeyParser.get_final_key(input_str)
             assert result == expected_output, f"Failed for input: {input_str}"
 
     def test_multiple_cases(self, load_test_data):
@@ -27,7 +27,7 @@ class TestKeyExtractLLMParser:
         for case in multiple_cases:
             input_str = case["input"]
             expected_output = case["expect"]
-            result = ImageKeyParser.post_process(input_str)
+            result = ImageKeyParser.get_final_key(input_str)
             assert result == expected_output, f"Failed for input: {input_str}"
 
     def test_punctuation_cases(self, load_test_data):
@@ -35,5 +35,5 @@ class TestKeyExtractLLMParser:
         for case in punctuation_cases:
             input_str = case["input"]
             expected_output = case["expect"]
-            result = ImageKeyParser.post_process(input_str)
+            result = ImageKeyParser.get_final_key(input_str)
             assert result == expected_output, f"Failed for input: {input_str}"

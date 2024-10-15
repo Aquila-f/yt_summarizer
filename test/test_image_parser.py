@@ -22,9 +22,9 @@ class TestKeyExtractLLMParser:
                 for case in finance_cases:
                     input_img_path = case["input"]
                     expected_output = case["expect"]
-                    result, _ = ImageKeyParser().parse(input_img_path)
+                    response = ImageKeyParser().parse(input_img_path)
                     assert (
-                        result == expected_output
+                        response.key == expected_output
                     ), f"Failed for input: {input_img_path}"
         finally:
             print(f"token: {cb.total_tokens}, cost: {cb.total_cost}")
@@ -36,9 +36,9 @@ class TestKeyExtractLLMParser:
                 for case in other_cases:
                     input_img_path = case["input"]
                     expected_output = case["expect"]
-                    result, _ = ImageKeyParser().parse(input_img_path)
+                    response = ImageKeyParser().parse(input_img_path)
                     assert (
-                        result == expected_output
+                        response.key == expected_output
                     ), f"Failed for input: {input_img_path}"
         finally:
             print(f"token: {cb.total_tokens}, cost: {cb.total_cost}")

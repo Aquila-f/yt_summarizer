@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+*.ipynb
 
 # VSCode settings
 .vscode/
@@ -14,3 +15,19 @@ poetry.lock
 # Audio files
 *.mp3
 *.wav
+*.jpg
+*.jpg
+*.mp4
+*.txt
+*.json
+
+# Exceptions
+!test/*.png
+!test/*.json
+
+# Directories
+path/
+data/
+
+# env
+.env
