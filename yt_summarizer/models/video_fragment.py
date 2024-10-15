@@ -8,5 +8,11 @@ class SceneDetectionInfo(BaseModel):
     img_timestamp: float
 
 
-class VideoFragment(SceneDetectionInfo):
+class SceneExtractInfo(SceneDetectionInfo):
+    key: str
+    has_chart: bool = False
+    llm_response: list[str]
+
+
+class VideoFragment(SceneExtractInfo):
     sentences: list[str]

@@ -4,7 +4,9 @@ from cv2 import CAP_PROP_POS_MSEC, VideoCapture, imwrite
 from scenedetect import ContentDetector, detect
 from scenedetect.frame_timecode import FrameTimecode
 
-from yt_summarizer.models.video_fragment import SceneDetectionInfo
+from yt_summarizer.llm_parser.image_key_parser import ImageKeyParser
+from yt_summarizer.models.llm_response import ImageKeyResponse
+from yt_summarizer.models.video_fragment import SceneDetectionInfo, SceneExtractInfo
 from yt_summarizer.utils.file_operation import is_exist
 
 CONTENT_DETECTOR_THRESHOLD = 15.0
@@ -13,6 +15,32 @@ IMAGE_TIMESTAMP_OFFSET = 1.2
 
 
 class SceneHandler:
+    @staticmethod
+    def _extract_key_from_image(image_path: str) -> ImageKeyResponse:
+        try:
+            response = ImageKeyParser().parse(image_path)
+            return response
+        except Exception as e:
+            print(f"Error extracting key from image: {e}")
+            return ImageKeyResponse(content="", key="")
+
+    @classmethod
+    def _post_process_img_extract(
+        cls,
+        scene_result: list[SceneDetectionInfo],
+    ) -> list[SceneExtractInfo]:
+        scene_extract_result = []
+        for scene in scene_result:
+            response = cls._extract_key_from_image(scene.img_path)
+            scene_extract_result.append(
+                SceneExtractInfo(
+                    **scene.model_dump(),
+                    key=response.key,
+                    has_chart=response.has_chart,
+                    llm_response=response.content.split("\n"),
+                )
+            )
+        return scene_extract_result
 
     @classmethod
     def _scene_postprocessor(
@@ -71,3 +99,9 @@ class SceneHandler:
 
         scene_result = cls._scene_postprocessor(save_dir, scenedetect_result)
         return scene_result
+
+    @classmethod
+    def extract_scenes(cls, save_dir: str) -> list[SceneExtractInfo]:
+        scene_result = cls.detect_scenes(save_dir)
+        scene_extract_result = cls._post_process_img_extract(scene_result)
+        return scene_extract_result

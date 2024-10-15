@@ -1,11 +1,12 @@
 import os
 from typing import Optional
 
-from yt_summarizer.models.video_fragment import SceneDetectionInfo, VideoFragment
+from yt_summarizer.models.video_fragment import SceneExtractInfo, VideoFragment
 from yt_summarizer.models.yt_info import Segment, YTInfo
 from yt_summarizer.service.scene_handler import SceneHandler
 from yt_summarizer.service.whisperx_handler import WhisperxHandler
 from yt_summarizer.service.yt_helper import YTHelper
+from yt_summarizer.utils.file_operation import save_list
 
 DATA_ROOT = "./data"
 
@@ -18,11 +19,12 @@ class YTProcessor:
         subtitle_content = cls.get_subtitle(yt_info)
         scenes_content = cls.get_scenes(save_dir, yt_url)
         fragments = cls.merge_fragments(subtitle_content, scenes_content)
+        save_list(fragments, os.path.join(save_dir, "fragments.json"))
         return fragments
 
     @staticmethod
     def merge_fragments(
-        subtitle_content: list[Segment], scenes_content: list[SceneDetectionInfo]
+        subtitle_content: list[Segment], scenes_content: list[SceneExtractInfo]
     ) -> list[VideoFragment]:
         fragment_list = []
         subtitle_idx = 0
@@ -66,11 +68,7 @@ class YTProcessor:
             return audio_text
 
     @staticmethod
-    def get_scenes(save_dir: str, yt_url: str) -> Optional[list[SceneDetectionInfo]]:
-        try:
-            _ = YTHelper.download_video(save_dir, yt_url)
-            scenes_content = SceneHandler.detect_scenes(save_dir)
-            return scenes_content
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            return None
+    def get_scenes(save_dir: str, yt_url: str) -> list[SceneExtractInfo]:
+        YTHelper.download_video(save_dir, yt_url)
+        scenes_content = SceneHandler.extract_scenes(save_dir)
+        return scenes_content

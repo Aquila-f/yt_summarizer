@@ -1,11 +1,11 @@
 import re
 import string
-from typing import Optional, Tuple
 
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from yt_summarizer.llm_parser.base_parser import BaseParser
 from yt_summarizer.llm_parser.utils.llm import get_openai_model
+from yt_summarizer.models.llm_response import ImageKeyResponse
 from yt_summarizer.utils.file_operation import load_prompt
 from yt_summarizer.utils.image_handler import ImageHandler
 
@@ -45,17 +45,29 @@ class ImageKeyParser(BaseParser):
         return messages
 
     @staticmethod
-    def post_process(result: str) -> Optional[str]:
+    def get_chart_staus(result: str) -> bool:
+        matches = re.findall(r"\{\{.*?\}\}", result)
+        if matches:
+            last_match = matches[-1]
+            return last_match.upper().replace(" ", "") == "YES"
+        return "NO"
+
+    @staticmethod
+    def get_final_key(result: str) -> str:
         matches = re.findall(r"\[\[.*?\]\]", result)
         if matches:
             last_match = matches[-1]
             punctuation = string.punctuation.replace("&", "")
             translator = str.maketrans("", "", punctuation)
-            return last_match.translate(translator).upper()
-        return None
+            return last_match.translate(translator).upper().replace(" ", "")
+        return ""
 
     @classmethod
-    def parse(cls, image_path: str) -> Tuple[str, str]:
+    def parse(cls, image_path: str) -> ImageKeyResponse:
         prompt = cls.get_complete_prompt(image_path)
         result = cls.llm.invoke(prompt)
-        return cls.post_process(result.content), result.content
+        return ImageKeyResponse(
+            key=cls.get_final_key(result.content),
+            has_chart=cls.get_chart_staus(result.content),
+            content=result.content,
+        )
