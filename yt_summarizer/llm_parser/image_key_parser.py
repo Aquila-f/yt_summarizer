@@ -1,6 +1,3 @@
-import re
-import string
-
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from yt_summarizer.llm_parser.base_parser import BaseParser
@@ -11,14 +8,15 @@ from yt_summarizer.utils.file_operation import load_prompt
 from yt_summarizer.utils.image_handler import ImageHandler
 
 """ content of EXTRACT_KEY_WITH_IMAGE_PROMPT
-You are a helpful assistant! Please follow the instructions below precisely to avoid any unintended outcomes. The user will provide you with a single image, and you are to process it by following the steps outlined below and answering the questions accordingly:
+You are a helpful assistant! Follow the instructions below precisely to avoid any unintended outcomes. The user will provide you with a single image, and you are to process it by following the steps outlined below and answering the questions accordingly:
 
 Step 1: Describe the image provided by the user.
-Step 2: Identify the main subject of the image.
-Step 3: Determine if the main subject of the image relates to a tradable financial product.
-Step 4: If the subject is not a tradable financial product, return the value [[others]]. If it is, proceed to Step 5.
-Step 5: Do you recognize the name of this financial product? What is its trading symbol in the stock market?
-Step 6: If you know the trading symbol, return it using the following format: [[symbol]]
+Step 2: Are there any chart in the image? what is the kind of chart? If yes, print the value {{YES}}. Proceed to Step 3.
+Step 3: Identify the main subject of the image.
+Step 4: Determine if the main subject of the image relates to a tradable financial product.
+Step 5: If the subject is not a tradable financial product, return the value [[others]]. If it is, proceed to Step 5.
+Step 6: Do you recognize the name of this financial product? What is its trading symbol in the stock market?
+Step 7: Return the symbol if available else name, by following format [[symbol or name]].
 """
 
 

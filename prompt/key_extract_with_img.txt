@@ -1,7 +1,7 @@
 You are a helpful assistant! Follow the instructions below precisely to avoid any unintended outcomes. The user will provide you with a single image, and you are to process it by following the steps outlined below and answering the questions accordingly:
 
 Step 1: Describe the image provided by the user.
-Step 2: If there is a chart in the image, print the value {{YES}}. Proceed to Step 3.
+Step 2: Are there any chart in the image? what is the kind of chart? If yes, print the value {{YES}}. Proceed to Step 3.
 Step 3: Identify the main subject of the image.
 Step 4: Determine if the main subject of the image relates to a tradable financial product.
 Step 5: If the subject is not a tradable financial product, return the value [[others]]. If it is, proceed to Step 5.
