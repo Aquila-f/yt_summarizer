@@ -1,0 +1,22 @@
+{
+    "finance_product_cases": [
+        {
+            "input": "test/data/test_images/BZmain.png",
+            "expect": "BZMAIN"
+        },
+        {
+            "input": "test/data/test_images/SPX.png",
+            "expect": "SPX"
+        },
+        {
+            "input": "test/data/test_images/SPX_nochart.png",
+            "expect": "S&P500"
+        }
+    ],
+    "other_cases": [
+        {
+            "input": "./test/data/test_images/other.png",
+            "expect": "OTHERS"
+        }
+    ]
+}

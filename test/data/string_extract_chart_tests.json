@@ -1,0 +1,24 @@
+{
+    "base_cases": [
+        {
+            "input": "Step 2: Yes, there is a candlestick chart in the image. {{YES}}",
+            "expect": true
+        },
+        {
+            "input": "Step 2: Yes, there is a chart in the image. {{YES}}",
+            "expect": true
+        },
+        {
+            "input": "Step 2: Are there any charts in the image? Yes, there is a candlestick chart. {{YES}}",
+            "expect": true
+        },
+        {
+            "input": "Step 2: There is no chart in the image. ",
+            "expect": false
+        },
+        {
+            "input": "[[others]] Step 6: The trading symbol for this financial product is",
+            "expect": false
+        }
+    ]
+}

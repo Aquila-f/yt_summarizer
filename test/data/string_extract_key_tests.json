@@ -1,0 +1,52 @@
+{
+    "base_cases": [
+        {
+            "input": "Step 6: The trading symbol for this financial product is [[GOOG]].",
+            "expect": "GOOG"
+        },
+        {
+            "input": "[[[Symbol]]] Step 6: The trading symbol for this financial product is [[GOOG]].",
+            "expect": "GOOG"
+        },
+        {
+            "input": "Step 6: The trading symbol for this financial product is [[AMD]]",
+            "expect": "AMD"
+        },
+        {
+            "input": "[[BZmain]] Step 6: The trading symbol for this financial product is",
+            "expect": "BZMAIN"
+        },
+        {
+            "input": "[[others]] Step 6: The trading symbol for this financial product is",
+            "expect": "OTHERS"
+        }
+    ],
+    "multiple_cases": [
+        {
+            "input": "[[Symbol]] Step 6: The trading symbol for this financial product is [[GOOG]].",
+            "expect": "GOOG"
+        },
+        {
+            "input": "Step 6: The trading symbol for this financial product is[[Symbol]][[AMD]]",
+            "expect": "AMD"
+        },
+        {
+            "input": "[[Symbol]][[Symbol]][[Symbol]][[Symbol]][[BZmain]] Step 6: The trading symbol for this financial product is",
+            "expect": "BZMAIN"
+        }
+    ],
+    "punctuation_cases": [
+        {
+            "input": "[[{Symbol}]] Step 6: The trading symbol for this financial product is [[<GOOG>]].",
+            "expect": "GOOG"
+        },
+        {
+            "input": "Step 6: The trading symbol for this financial product is[[Symbol]][[.S&P500]]",
+            "expect": "S&P500"
+        },
+        {
+            "input": "[[Symbol]][[Symbol]][[Symbol]][[Symbol]][[{BZmain}]] Step 6: The trading symbol for this financial product is",
+            "expect": "BZMAIN"
+        }
+    ]
+}

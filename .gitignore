@@ -17,17 +17,19 @@ poetry.lock
 *.wav
 *.jpg
 *.jpg
+*.png
 *.mp4
 *.txt
 *.json
 
 # Exceptions
-!test/*.png
 !test/*.json
+!test/*.png
+!prompt/*.txt
 
 # Directories
 path/
-data/
+savedata/
 
 # env
 .env
