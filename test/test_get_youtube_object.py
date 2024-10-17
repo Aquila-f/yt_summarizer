@@ -1,5 +1,3 @@
-import pytest
-
 from yt_summarizer.service.yt_helper import YTHelper
 
 

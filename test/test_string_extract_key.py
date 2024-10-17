@@ -2,12 +2,12 @@ import json
 
 import pytest
 
-from yt_summarizer.llm_parser.image_key_parser import ImageKeyParser
+from yt_summarizer.llm_parser.string_extractor import StringExtractor
 
-TEST_FILE = "test/data/key_extract_post_process_tests.json"
+TEST_FILE = "test/data/string_extract_key_tests.json"
 
 
-class TestKeyExtractLLMParser:
+class TestKeyStringExtract:
     @pytest.fixture(scope="class")
     def load_test_data(self):
         with open(TEST_FILE, "r") as file:
@@ -19,7 +19,7 @@ class TestKeyExtractLLMParser:
         for case in base_cases:
             input_str = case["input"]
             expected_output = case["expect"]
-            result = ImageKeyParser.get_final_key(input_str)
+            result = StringExtractor.get_key_topic(input_str)
             assert result == expected_output, f"Failed for input: {input_str}"
 
     def test_multiple_cases(self, load_test_data):
@@ -27,7 +27,7 @@ class TestKeyExtractLLMParser:
         for case in multiple_cases:
             input_str = case["input"]
             expected_output = case["expect"]
-            result = ImageKeyParser.get_final_key(input_str)
+            result = StringExtractor.get_key_topic(input_str)
             assert result == expected_output, f"Failed for input: {input_str}"
 
     def test_punctuation_cases(self, load_test_data):
@@ -35,5 +35,5 @@ class TestKeyExtractLLMParser:
         for case in punctuation_cases:
             input_str = case["input"]
             expected_output = case["expect"]
-            result = ImageKeyParser.get_final_key(input_str)
+            result = StringExtractor.get_key_topic(input_str)
             assert result == expected_output, f"Failed for input: {input_str}"
