@@ -8,19 +8,25 @@ from yt_summarizer.service.whisperx_handler import WhisperxHandler
 from yt_summarizer.service.yt_helper import YTHelper
 from yt_summarizer.utils.file_operation import save_list
 
-DATA_ROOT = "./data"
+DATA_ROOT = "./savedata"
 
 
 class YTProcessor:
-    @classmethod
-    def get_fragments(cls, yt_url: str) -> Optional[list[VideoFragment]]:
-        yt_info = YTHelper.extract_info(yt_url)
-        save_dir = os.path.join(DATA_ROOT, yt_info.id)
-        subtitle_content = cls.get_subtitle(yt_info)
-        scenes_content = cls.get_scenes(save_dir, yt_url)
-        fragments = cls.merge_fragments(subtitle_content, scenes_content)
-        save_list(fragments, os.path.join(save_dir, "fragments.json"))
-        return fragments
+    @staticmethod
+    def merge_same_key(
+        fragments: list[VideoFragment],
+    ) -> list[VideoFragment]:
+        fragment_dict: dict[str, VideoFragment] = {}
+        for fragment in fragments:
+            if fragment.key in fragment_dict:
+                fragment_dict[fragment.key].sentences.extend(fragment.sentences)
+                if fragment.has_chart:
+                    fragment_dict[fragment.key].img_path = fragment.img_path
+                    fragment_dict[fragment.key].img_timestamp = fragment.img_timestamp
+                    fragment_dict[fragment.key].has_chart = True
+            else:
+                fragment_dict[fragment.key] = fragment
+        return [fragment for fragment in fragment_dict.values()]
 
     @staticmethod
     def merge_fragments(
@@ -72,3 +78,14 @@ class YTProcessor:
         YTHelper.download_video(save_dir, yt_url)
         scenes_content = SceneHandler.extract_scenes(save_dir)
         return scenes_content
+
+    @classmethod
+    def get_topics(cls, yt_url: str) -> Optional[list[VideoFragment]]:
+        yt_info = YTHelper.extract_info(yt_url)
+        save_dir = os.path.join(DATA_ROOT, yt_info.id)
+        subtitle_content = cls.get_subtitle(yt_info)
+        scenes_content = cls.get_scenes(save_dir, yt_url)
+        fragments = cls.merge_fragments(subtitle_content, scenes_content)
+        topics = cls.merge_same_key(fragments)
+        save_list(topics, os.path.join(save_dir, "topics.json"))
+        return fragments
